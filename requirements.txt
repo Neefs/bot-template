@@ -1,0 +1,5 @@
+git+https://github.com/Pycord-Development/pycord
+aiosqlite
+black
+jishaku
+mystbin.py
