@@ -49,11 +49,11 @@ class Development(commands.Cog):
                         if filename.endswith(".py") and not filename.startswith("_"):
                             cogstr = f"{folder}.{filename[:-3]}"
                             try:
-                                self.bot.load_extension(cogstr)
+                                await self.bot.load_extension(cogstr)
                                 cogs += f"\n\n📥 `{cogstr}`"
                             except (discord.ExtensionAlreadyLoaded,):
-                                self.bot.unload_extension(cogstr)
-                                self.bot.load_extension(cogstr)
+                                await self.bot.unload_extension(cogstr)
+                                await self.bot.load_extension(cogstr)
                                 cogs += f"\n\n🔁 `{cogstr}`"
                             except Exception as e:
                                 print(
@@ -74,11 +74,11 @@ class Development(commands.Cog):
         for cog in listedcogs:
             if cog == 'jishaku':
                 try:
-                    self.bot.load_extension(cog)
+                    await self.bot.load_extension(cog)
                     cogs += f"\n\n📥 `{cog}`"
                 except (discord.ExtensionAlreadyLoaded,):
-                    self.bot.unload_extension(cog)
-                    self.bot.load_extension(cog)
+                    await self.bot.unload_extension(cog)
+                    await self.bot.load_extension(cog)
                     cogs += f"\n\n🔁 `{cog}`"
                 except Exception as e:
                     print(
@@ -97,13 +97,13 @@ class Development(commands.Cog):
                     files = os.listdir(folder)
                     cogstr = f'{folder}.{cog}'
                     if (cog + '.py') in files:
-                        self.bot.load_extension(cogstr)
+                        await self.bot.load_extension(cogstr)
                         cogs += f"\n\n📥 `{cogstr}`"
                     else:
                         continue
                 except (discord.ExtensionAlreadyLoaded,):
-                    self.bot.unload_extension(cogstr)
-                    self.bot.load_extension(cogstr)
+                    await self.bot.unload_extension(cogstr)
+                    await self.bot.load_extension(cogstr)
                     cogs += f"\n\n🔁 `{cogstr}`"
                 except Exception as e:
                     print(
@@ -129,7 +129,7 @@ class Development(commands.Cog):
                         if filename.endswith(".py") and not filename.startswith("_"):
                             cogstr = f"{folder}.{filename[:-3]}"
                             try:
-                                self.bot.unload_extension(cogstr)
+                                await self.bot.unload_extension(cogstr)
                                 cogs += f"\n\n📤 `{cogstr}`"
                             except Exception as e:
                                 print(
@@ -151,7 +151,7 @@ class Development(commands.Cog):
         for cog in listedcogs:
             if cog == 'jishaku':
                 try:
-                    self.bot.unload_extension(cog)
+                    await self.bot.unload_extension(cog)
                     cogs += f"\n\n📤 `{cog}`"
                 except Exception as e:
                     print(
@@ -170,7 +170,7 @@ class Development(commands.Cog):
                     files = os.listdir(folder)
                     cogstr = f'{folder}.{cog}'
                     if (cog + '.py') in files:
-                        self.bot.unload_extension(cogstr)
+                        await self.bot.unload_extension(cogstr)
                         cogs += f"\n\n📤 `{cogstr}`"
                     else:
                         continue
@@ -209,5 +209,5 @@ class Development(commands.Cog):
         
 
 
-def setup(bot):
-    bot.add_cog(Development(bot))
+async def setup(bot):
+    await bot.add_cog(Development(bot))

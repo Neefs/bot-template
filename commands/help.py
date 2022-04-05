@@ -179,5 +179,5 @@ class Help(commands.Cog):
         print("✅ Help cog is ready.")
 
 
-def setup(bot):
-    bot.add_cog(Help(bot))
+async def setup(bot):
+    await bot.add_cog(Help(bot))

@@ -24,14 +24,14 @@ class PlaceHolder(commands.Bot):
         """Alias for bot.user.id"""
         return self.user.id
 
-    def load_cogs(self, folders: str | list):
+    async def load_cogs(self, folders: str | list):
         if isinstance(folders, str):
             folders = [folders]
         for folder in folders:
             try:
                 for filename in os.listdir(folder):
                     if filename.endswith(".py") and not filename.startswith("_"):
-                        self.load_extension(f"{folder}.{filename[:-3]}")
+                        await self.load_extension(f"{folder}.{filename[:-3]}")
             except FileNotFoundError:
                 print(str(folder) + " Could not be found")
 
@@ -44,8 +44,8 @@ class PlaceHolder(commands.Bot):
         return returned
 
     async def starting_logic(self):
-        self.load_cogs(["commands", "events"])
-        self.load_extension("jishaku")
+        await self.load_cogs(["commands", "events"])
+        await self.load_extension("jishaku")
 
     async def closing_logic(self):
         await self.close()
