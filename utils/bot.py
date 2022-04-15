@@ -30,6 +30,9 @@ class PlaceHolder(commands.Bot):
         for folder in folders:
             try:
                 for filename in os.listdir(folder):
+                    if self.config['bot']['helpCommand'] == False and filename[:-3] == 'help':
+                        continue
+
                     if filename.endswith(".py") and not filename.startswith("_"):
                         await self.load_extension(f"{folder}.{filename[:-3]}")
             except FileNotFoundError:
@@ -46,6 +49,8 @@ class PlaceHolder(commands.Bot):
     async def starting_logic(self):
         await self.load_cogs(["commands", "events"])
         await self.load_extension("jishaku")
+        if self.config['bot']['helpCommand'] == False:
+            self.help_command = None
 
     async def closing_logic(self):
         await self.close()

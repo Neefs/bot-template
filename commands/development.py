@@ -51,7 +51,7 @@ class Development(commands.Cog):
                             try:
                                 await self.bot.load_extension(cogstr)
                                 cogs += f"\n\n📥 `{cogstr}`"
-                            except (discord.ExtensionAlreadyLoaded,):
+                            except (commands.ExtensionAlreadyLoaded,):
                                 await self.bot.unload_extension(cogstr)
                                 await self.bot.load_extension(cogstr)
                                 cogs += f"\n\n🔁 `{cogstr}`"
@@ -76,7 +76,7 @@ class Development(commands.Cog):
                 try:
                     await self.bot.load_extension(cog)
                     cogs += f"\n\n📥 `{cog}`"
-                except (discord.ExtensionAlreadyLoaded,):
+                except (commands.ExtensionAlreadyLoaded,):
                     await self.bot.unload_extension(cog)
                     await self.bot.load_extension(cog)
                     cogs += f"\n\n🔁 `{cog}`"
@@ -101,7 +101,7 @@ class Development(commands.Cog):
                         cogs += f"\n\n📥 `{cogstr}`"
                     else:
                         continue
-                except (discord.ExtensionAlreadyLoaded,):
+                except (commands.ExtensionAlreadyLoaded,):
                     await self.bot.unload_extension(cogstr)
                     await self.bot.load_extension(cogstr)
                     cogs += f"\n\n🔁 `{cogstr}`"
@@ -194,9 +194,62 @@ class Development(commands.Cog):
             await ctx.message.delete()
         except:
             pass
-        message = await ctx.send(embed=Embed(title="Restarting... Allow up to 20 seconds", color=self.bot.color))
+        await ctx.send(embed=Embed(title="Restarting... Allow up to 20 seconds", color=self.bot.color))
 
         self.restart_bot()
+
+    
+
+    @commands.command(name="synccommands", aliases=['synccommand', 'sync', 'sc'])
+    async def sync_commands(self, ctx, guild:int=None):
+        """Syncs all application commands"""
+        try:
+            await ctx.message.delete()
+        except:
+            pass
+
+        if guild:
+            await self.bot.tree.sync(guild=discord.Object(guild))
+            await ctx.send(embed=Embed(title="Commands Synced", color=self.bot.color, description=f"Application commands have been synced to {guild}."))
+            return
+
+        class ConfirmSyncView(discord.ui.View):
+            def __init__(self, bot, msg=None):
+                self.bot = bot
+                self.msg = msg
+                super().__init__(timeout=180)
+
+            async def on_timeout(self) -> None:
+                try:
+                    await self.msg.delete()
+                except:
+                    pass
+
+            
+            async def interaction_check(self, interaction: discord.Interaction) -> bool:
+                return interaction.user == ctx.author
+
+            @discord.ui.button(label="Confirm", style=discord.ButtonStyle.green)
+            async def confirm_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+                await self.bot.tree.sync()
+                await interaction.response.send_message(embed=Embed(title="Commands Synced", color=self.bot.color, description="Application commands have been synced **globally**."), ephemeral=True)
+
+            @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red)
+            async def cancel_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+                await interaction.response.send_message(embed=Embed(title="Cancelled", color=0xff0000, description="Cancelled application commands sync."), ephemeral=True)
+
+
+
+
+
+        view = ConfirmSyncView(self.bot)
+        view.msg = await ctx.send("Are you sure", view=view)
+
+
+        
+        
+    
+
 
     def restart_bot(self):
         python = sys.executable
