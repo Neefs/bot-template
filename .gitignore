@@ -4,3 +4,4 @@ config.json
 *.pyc
 *.db
 /data
+.vscode/

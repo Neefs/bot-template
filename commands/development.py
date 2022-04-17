@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Literal, Optional
 
 from discord import Embed
 import traceback as tb
@@ -37,7 +38,9 @@ class Development(commands.Cog):
         await ctx.send(embed=Embed(title="Console Cleared", color=self.bot.color))
         os.system("clear")
 
-    @commands.command(name="loadcog", aliases=["lc", "reloadcog", "rc", "load", "reload"])
+    @commands.command(
+        name="loadcog", aliases=["lc", "reloadcog", "rc", "load", "reload"]
+    )
     async def load_cog(self, ctx: commands.Context, *, cog: str = None):
         """Loads and reloads cogs."""
         folders = ["events", "commands"]
@@ -70,9 +73,9 @@ class Development(commands.Cog):
             await ctx.send(cogs)
             print(cogs)
             return
-        listedcogs = cog.lower().split(' ')
+        listedcogs = cog.lower().split(" ")
         for cog in listedcogs:
-            if cog == 'jishaku':
+            if cog == "jishaku":
                 try:
                     await self.bot.load_extension(cog)
                     cogs += f"\n\n📥 `{cog}`"
@@ -81,11 +84,7 @@ class Development(commands.Cog):
                     await self.bot.load_extension(cog)
                     cogs += f"\n\n🔁 `{cog}`"
                 except Exception as e:
-                    print(
-                        "Ignoring exception while loading cog {}:".format(
-                            cogstr
-                        )
-                    )
+                    print("Ignoring exception while loading cog {}:".format(cogstr))
                     traceback = "".join(
                         tb.format_exception(type(e), e, e.__traceback__)
                     )
@@ -95,8 +94,8 @@ class Development(commands.Cog):
             for folder in folders:
                 try:
                     files = os.listdir(folder)
-                    cogstr = f'{folder}.{cog}'
-                    if (cog + '.py') in files:
+                    cogstr = f"{folder}.{cog}"
+                    if (cog + ".py") in files:
                         await self.bot.load_extension(cogstr)
                         cogs += f"\n\n📥 `{cogstr}`"
                     else:
@@ -106,19 +105,15 @@ class Development(commands.Cog):
                     await self.bot.load_extension(cogstr)
                     cogs += f"\n\n🔁 `{cogstr}`"
                 except Exception as e:
-                    print(
-                        "Ignoring exception while loading cog {}:".format(
-                            cogstr
-                        )
-                    )
+                    print("Ignoring exception while loading cog {}:".format(cogstr))
                     traceback = "".join(
                         tb.format_exception(type(e), e, e.__traceback__)
                     )
                     cogs += f"\n\n📥 ⚠️ `{cogstr}`\n```py\n{traceback}\n```"
         await ctx.send(cogs)
 
-    @commands.command(name='unloadcog', aliases=['uc', 'unload'])
-    async def unload_cog(self, ctx, *, cog:str = None):
+    @commands.command(name="unloadcog", aliases=["uc", "unload"])
+    async def unload_cog(self, ctx, *, cog: str = None):
         """Unloads cogs."""
         folders = ["events", "commands"]
         cogs = ""
@@ -147,18 +142,14 @@ class Development(commands.Cog):
             print(cogs)
             return
 
-        listedcogs = cog.lower().split(' ')
+        listedcogs = cog.lower().split(" ")
         for cog in listedcogs:
-            if cog == 'jishaku':
+            if cog == "jishaku":
                 try:
                     await self.bot.unload_extension(cog)
                     cogs += f"\n\n📤 `{cog}`"
                 except Exception as e:
-                    print(
-                        "Ignoring exception while loading cog {}:".format(
-                            cogstr
-                        )
-                    )
+                    print("Ignoring exception while loading cog {}:".format(cogstr))
                     traceback = "".join(
                         tb.format_exception(type(e), e, e.__traceback__)
                     )
@@ -168,19 +159,15 @@ class Development(commands.Cog):
             for folder in folders:
                 try:
                     files = os.listdir(folder)
-                    cogstr = f'{folder}.{cog}'
-                    if (cog + '.py') in files:
+                    cogstr = f"{folder}.{cog}"
+                    if (cog + ".py") in files:
                         await self.bot.unload_extension(cogstr)
                         cogs += f"\n\n📤 `{cogstr}`"
                     else:
                         continue
-                
+
                 except Exception as e:
-                    print(
-                        "Ignoring exception while loading cog {}:".format(
-                            cogstr
-                        )
-                    )
+                    print("Ignoring exception while loading cog {}:".format(cogstr))
                     traceback = "".join(
                         tb.format_exception(type(e), e, e.__traceback__)
                     )
@@ -194,24 +181,37 @@ class Development(commands.Cog):
             await ctx.message.delete()
         except:
             pass
-        await ctx.send(embed=Embed(title="Restarting... Allow up to 20 seconds", color=self.bot.color))
+        await ctx.send(
+            embed=Embed(
+                title="Restarting... Allow up to 20 seconds", color=self.bot.color
+            )
+        )
 
         self.restart_bot()
 
-    
+    @commands.command(name="synccommands", aliases=["synccommand", "sync", "sc"])
+    async def sync_commands(
+        self,
+        ctx: commands.Context,
+        guilds: commands.Greedy[discord.Object],
+        spec: Optional[Literal["~"]] = None,
+    ):
+        """Syncs all application commands
+        Usage:
+        '-sync' | Synchronizes all guilds
+        '-sync ~' | Synchronizes current guild
+        '-sync id_1, id_2' | Synchronizes specified guilds by id
+        :param: guilds: The guilds to sync the command tree to
+        :param: spec: Sync to current guild if spec == ~
 
-    @commands.command(name="synccommands", aliases=['synccommand', 'sync', 'sc'])
-    async def sync_commands(self, ctx, guild:int=None):
-        """Syncs all application commands"""
+        :returns: ABSOLUTELY FUCKING NOTHING
+        """
+        # Credit to Mooshi#6669 for the code revision
+
         try:
             await ctx.message.delete()
         except:
             pass
-
-        if guild:
-            await self.bot.tree.sync(guild=discord.Object(guild))
-            await ctx.send(embed=Embed(title="Commands Synced", color=self.bot.color, description=f"Application commands have been synced to {guild}."))
-            return
 
         class ConfirmSyncView(discord.ui.View):
             def __init__(self, bot, msg=None):
@@ -225,41 +225,68 @@ class Development(commands.Cog):
                 except:
                     pass
 
-            
             async def interaction_check(self, interaction: discord.Interaction) -> bool:
                 return interaction.user == ctx.author
 
             @discord.ui.button(label="Confirm", style=discord.ButtonStyle.green)
-            async def confirm_button(self, interaction:discord.Interaction, button:discord.ui.Button):
-                await self.bot.tree.sync()
-                await interaction.response.send_message(embed=Embed(title="Commands Synced", color=self.bot.color, description="Application commands have been synced **globally**."), ephemeral=True)
+            async def confirm_button(
+                self, interaction: discord.Interaction, button: discord.ui.Button
+            ):
+
+                if not guilds:
+                    if spec == "~":  
+                        fmt = await ctx.bot.tree.sync(guild=ctx.guild)
+                    else:
+                        fmt = await ctx.bot.tree.sync()
+                    await interaction.response.send_message(
+                        embed=Embed(
+                            title="Commands Synced",
+                            color=self.bot.color,
+                            description=f"Synced {len(fmt)} commands {'globally' if spec is None else 'to the current guild.'}",
+                        ),
+                        ephemeral=True,
+                    )
+                    return
+
+                fmt = 0  # what?
+                for guild in guilds:
+                    try:
+                        await ctx.bot.tree.sync(guild=guild)
+                    except discord.HTTPException:
+                        pass
+                    else:
+                        fmt += 1 
+
+                await interaction.response.send_message(
+                    embed=Embed(
+                        title="Commands Synced",
+                        color=self.bot.color,
+                        description=f"Synced the tree to {fmt}/{len(guilds)} guilds.",
+                    ),
+                    ephemeral=True,
+                )
 
             @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red)
-            async def cancel_button(self, interaction:discord.Interaction, button:discord.ui.Button):
-                await interaction.response.send_message(embed=Embed(title="Cancelled", color=0xff0000, description="Cancelled application commands sync."), ephemeral=True)
-
-
+            async def cancel_button(
+                self, interaction: discord.Interaction, button: discord.ui.Button
+            ):
+                await interaction.response.send_message(
+                    embed=Embed(
+                        title="Cancelled",
+                        color=0xFF0000,
+                        description="Cancelled application commands sync.",
+                    ),
+                    ephemeral=True,
+                )
 
 
 
         view = ConfirmSyncView(self.bot)
         view.msg = await ctx.send("Are you sure", view=view)
 
-
-        
-        
-    
-
-
     def restart_bot(self):
         python = sys.executable
         os.execl(python, python, *sys.argv)
-        
-
-
-                    
-
-        
 
 
 async def setup(bot):

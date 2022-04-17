@@ -11,7 +11,6 @@ with open("config.json", "r") as readfile:
 
 async def main():
     bot = PlaceHolder(config=config, intents=discord.Intents.all())
-    
 
     @bot.event
     async def on_ready():
