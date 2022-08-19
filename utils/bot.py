@@ -51,7 +51,7 @@ class PlaceHolder(commands.Bot):
         if not lang:
             lang = "python"
         client = mystbin.Client()
-        returned = await client.post(code, lang)
+        returned = await self.client.create_paste(filename=f"code.{lang}", content=code, syntax=lang)
         await client.close()
         return returned
 
