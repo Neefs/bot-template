@@ -1,5 +1,4 @@
-git+https://github.com/Rapptz/discord.py
-git+https://github.com/PythonistaGuild/mystbin.py.git
-aiosqlite
-black
+discord.py[speed]
+python-dotenv
+asyncpg
 jishaku
