@@ -74,13 +74,15 @@ class Owner(commands.Cog):
                         ),
                         ephemeral=True,
                     )
+                    self.bot.logger.debug(f"Commands synced: {[c.name for c in fmt]}")
                     self.bot.active_commands = fmt
                     return
 
-                fmt = 0  # what?
+                fmt = 0
                 for guild in guilds:
                     try:
-                        await ctx.bot.tree.sync(guild=guild)
+                        synced = await ctx.bot.tree.sync(guild=guild)
+                        self.bot.logger.debug(f"Commands synced to {guild.id}: {[c.name for c in synced]}")
                     except discord.HTTPException:
                         pass
                     else:
